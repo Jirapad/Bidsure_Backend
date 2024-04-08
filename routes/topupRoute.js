@@ -5,6 +5,6 @@ const router = require('express').Router()
 
 router.route('/checkout').post(authentication,checkOut)
 router.route('/getorder/:id').get(getOrderId)
-router.route('/webhook').post(bodyParser.raw({ type: 'application/json' }),webhook)
+router.route('/webhook').post(bodyParse.raw({ type: 'application/json' }),webhook)
 
 module.exports = router
