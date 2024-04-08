@@ -60,6 +60,7 @@ const getOrderId = catchAsync(async(req,res,next)=>{
 const webhook = catchAsync(async(req,res,next)=>{
     const endpointSecret = process.env.WEBHOOK;
     const sig = req.headers['stripe-signature'];
+    console.log(req.body)
     let event;
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
@@ -91,7 +92,7 @@ const webhook = catchAsync(async(req,res,next)=>{
                 console.log(`Unhandled event type ${event.type}`);
         }
     }
-    
+
     if(process.env.NODE_ENV==='production'){
         if(event.type==='checkout.session.completed'){
             const paymentData = event.data.object;
