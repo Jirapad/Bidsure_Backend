@@ -52,10 +52,11 @@ const getOrderId = catchAsync(async(req,res,next)=>{
     if(!result){
         return next(new AppError("can not find orderId",400))
     }
-    return res.status(200).json({
-        status: "success",
-        order: result
-    })
+    return window.close()
+    // return res.status(200).json({
+    //     status: "success",
+    //     order: result
+    // })
 
 })
 
@@ -64,7 +65,7 @@ const webhook = catchAsync(async(req,res,next)=>{
     const sig = req.headers['stripe-signature'];
     let event;
     try {
-        const buf = Buffer.from(req.rawBody,'utf8')
+        //const buf = Buffer.from(req.rawBody,'utf8')
         //const buf = Buffer.from(req.rawBody, 'utf8');
         //event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
         event = stripe.webhooks.constructEvent(buf, sig, endpointSecret)
