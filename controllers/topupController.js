@@ -38,11 +38,12 @@ const checkOut = catchAsync(async(req,res,next)=>{
     if(!createTopup){
         return next(new AppError("fail to create topup",400))
     }
-    // return res.status(201).json({
-    //     status:'topup created',
-    //     data: createTopup
-    // })
-    return res.redirect(303, session.url)
+    return res.status(201).json({
+        status:'topup created',
+        data: createTopup,
+        link: session.url
+    })
+    //return res.redirect(303, session.url)
 })
 
 const getOrderId = catchAsync(async(req,res,next)=>{
@@ -107,7 +108,7 @@ const webhook = catchAsync(async(req,res,next)=>{
                         status: `complete`,
                     })
                 }
-                return next(new AppError('cannot change bio',400))
+                return next(new AppError('failure',400))
         }else{
         // Handle the event
             console.log(`Unhandled event type ${event.type}`);
