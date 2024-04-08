@@ -2,13 +2,11 @@ require('dotenv').config()
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-const bodyParser = require('body-parser')
 
 const app = express()
 const PORT = process.env.APP_PORT || 4000
 
 app.use(express.json())
-app.use(bodyParser.json())
 
 const auctionImagesDir = path.join(__dirname, 'uploads', 'auctionImages');
 const userImagesDir = path.join(__dirname, 'uploads', 'userImages');
@@ -35,7 +33,7 @@ const AppError = require('./utils/appError')
 app.use('/auth',authRouter)
 app.use('/auction',auctionRouter)
 app.use('/user',userRouter)
-app.use('/topup',topupRouter)
+app.use('/topup',express.json({type: 'application/json'}),topupRouter)
 
 app.use(
     '*',
