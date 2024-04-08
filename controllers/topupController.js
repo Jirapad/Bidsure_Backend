@@ -99,6 +99,7 @@ const webhook = catchAsync(async(req,res,next)=>{
     if(process.env.NODE_ENV==='production'){
         if(event.type==='checkout.session.completed'){
             const paymentData = event.data.object;
+            console.log(paymentData)
                 const sessionId = paymentData.id
                 const setStatus = paymentData.status
                 const rowsUpdated = await Topup.update({
