@@ -24,7 +24,7 @@ const checkOut = catchAsync(async(req,res,next)=>{
             },
         ],
         mode: "payment",
-        success_url: `http://localhost:3000/topup/getorder/${orderId}`,
+        success_url: `https://bidsure-backend.onrender.com/topup/getorder/${orderId}`,
     })
     const topupData = {
         userId: user.id,
