@@ -75,8 +75,9 @@ const webhook = catchAsync(async(req,res,next)=>{
             case 'checkout.session.completed':
                 const paymentData = event.data.object;
                 const sessionId = paymentData.id
+                const setStatus = paymentData.status
                 const rowsUpdated = await Topup.update({
-                    status: paymentData.status 
+                    status: setStatus 
                     },{
                         where:{
                             sessionId: sessionId
@@ -96,8 +97,9 @@ const webhook = catchAsync(async(req,res,next)=>{
         if(event.type==='checkout.session.completed'){
             const paymentData = event.data.object;
                 const sessionId = paymentData.id
+                const setStatus = paymentData.status
                 const rowsUpdated = await Topup.update({
-                    status: paymentData.status 
+                    status: setStatus
                     },{
                         where:{
                             sessionId: sessionId
