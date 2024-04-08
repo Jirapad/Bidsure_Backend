@@ -6,7 +6,16 @@ const path = require('path')
 const app = express()
 const PORT = process.env.APP_PORT || 4000
 
-app.use(express.json())
+//app.use(express.json())
+app.use((req, res, next) => {
+    if (req.originalUrl === '/topup/webhook') {
+        // Skip express.json() for /topup/webhook
+        next();
+    } else {
+        // Apply express.json() for all other routes
+        express.json()(req, res, next);
+    }
+})
 
 const auctionImagesDir = path.join(__dirname, 'uploads', 'auctionImages');
 const userImagesDir = path.join(__dirname, 'uploads', 'userImages');
