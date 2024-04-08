@@ -2,11 +2,13 @@ require('dotenv').config()
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
+const bodyParser = require('body-parser')
 
 const app = express()
 const PORT = process.env.APP_PORT || 4000
 
 app.use(express.json())
+app.use(bodyParser.json())
 
 const auctionImagesDir = path.join(__dirname, 'uploads', 'auctionImages');
 const userImagesDir = path.join(__dirname, 'uploads', 'userImages');
