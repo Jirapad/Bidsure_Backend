@@ -33,7 +33,7 @@ const AppError = require('./utils/appError')
 app.use('/auth',authRouter)
 app.use('/auction',auctionRouter)
 app.use('/user',userRouter)
-app.use('/topup',express.json({type: 'application/json'}),topupRouter)
+app.use('/topup',topupRouter)
 
 app.use(
     '*',
