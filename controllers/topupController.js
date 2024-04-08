@@ -43,7 +43,6 @@ const checkOut = catchAsync(async(req,res,next)=>{
         data: createTopup,
         link: session.url
     })
-    //return res.redirect(303, session.url)
 })
 
 const getOrderId = catchAsync(async(req,res,next)=>{
@@ -53,8 +52,7 @@ const getOrderId = catchAsync(async(req,res,next)=>{
         return next(new AppError("can not find orderId",400))
     }
     return res.status(200).json({
-        status: `Top-up amount "${result.price}" Success!!, you can close this tap`
-        //order: result
+        status: `Top-up amount ${result.price} Success!!, you can close this tap`
     })
 
 })
@@ -64,81 +62,12 @@ const webhook = catchAsync(async(req,res,next)=>{
     const sig = req.headers['stripe-signature'];
     let event;
     try {
-        const buf = Buffer.from(req.rawBody,'utf8')
-        //event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-        event = stripe.webhooks.constructEvent(buf, sig, endpointSecret)
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
     }
-    res.status(200).end()
 
-    processEvent(event)
-    // if(process.env.NODE_ENV==='development'){
-    //     switch (event.type) {
-    //         case 'checkout.session.completed':
-    //             const paymentData = event.data.object;
-    //             const sessionId = paymentData.id
-    //             const setStatus = paymentData.status
-    //             const rowsUpdated = await Topup.update({
-    //                 status: setStatus 
-    //                 },{
-    //                     where:{
-    //                         sessionId: sessionId
-    //                     }
-    //                 })
-    //             if(rowsUpdated.length===1){
-    //                 return res.status(200).json({
-    //                     status: `complete`,
-    //                 })
-    //             }
-    //             return next(new AppError('top up fail',400))
-    //         default:
-    //             console.log(`Unhandled event type ${event.type}`);
-    //     }
-    // }
-    // if(process.env.NODE_ENV==='production'){
-    //     if(event.type==='checkout.session.completed'){
-    //         const paymentData = event.data.object;
-    //         console.log(paymentData)
-    //             const sessionId = paymentData.id
-    //             const setStatus = paymentData.status
-    //             const rowsUpdated = await Topup.update({
-    //                 status: setStatus
-    //                 },{
-    //                     where:{
-    //                         sessionId: sessionId
-    //                     }
-    //                 })
-    //             if(rowsUpdated.length===1){
-    //                 return res.status(200).json({
-    //                     status: `complete`,
-    //                 })
-    //             }
-    //             return next(new AppError('failure',400))
-    //     }else{
-    //     // Handle the event
-    //         console.log(`Unhandled event type ${event.type}`);
-    //     }
-    // }
-    // // Return a 200 response to acknowledge receipt of the event
-    // res.send();
-})
-
-const captureRawBody = (req, res, next) => {
-    let data = '';
-    req.setEncoding('utf8');
-    req.on('data', (chunk) => {
-      data += chunk;
-    });
-    req.on('end', () => {
-      req.rawBody = data;
-      next();
-    });
-};
-
-async function processEvent(event) {
-    // Your code to handle long-running tasks goes here
     if(process.env.NODE_ENV==='development'){
         switch (event.type) {
             case 'checkout.session.completed':
@@ -153,34 +82,42 @@ async function processEvent(event) {
                         }
                     })
                 if(rowsUpdated.length===1){
-                    console.log('Top up completed successfully in development environment');
-                } else {
-                    console.error('Failed to update topup status in development environment');
+                    return res.status(200).json({
+                        status: `complete`,
+                    })
                 }
-                break;
+                return next(new AppError('top up fail',400))
             default:
                 console.log(`Unhandled event type ${event.type}`);
         }
-    } else if(process.env.NODE_ENV==='production') {
+    }
+    
+    if(process.env.NODE_ENV==='production'){
         if(event.type==='checkout.session.completed'){
             const paymentData = event.data.object;
-            const sessionId = paymentData.id
-            const setStatus = paymentData.status
-            const rowsUpdated = await Topup.update({
-                status: setStatus
-                },{
-                    where:{
-                        sessionId: sessionId
-                    }
-                })
-            if(rowsUpdated.length===1){
-                console.log('Top up completed successfully in production environment');
-            } else {
-                console.error('Failed to update topup status in production environment');
-            }
-        } else {
+            console.log(paymentData)
+                const sessionId = paymentData.id
+                const setStatus = paymentData.status
+                const rowsUpdated = await Topup.update({
+                    status: setStatus
+                    },{
+                        where:{
+                            sessionId: sessionId
+                        }
+                    })
+                if(rowsUpdated.length===1){
+                    return res.status(200).json({
+                        status: `complete`,
+                    })
+                }
+                return next(new AppError('failure',400))
+        }else{
+        // Handle the event
             console.log(`Unhandled event type ${event.type}`);
         }
     }
-}
-module.exports = {checkOut, getOrderId,webhook,captureRawBody}
+    // Return a 200 response to acknowledge receipt of the event
+    res.send();
+})
+
+module.exports = {checkOut, getOrderId,webhook}
