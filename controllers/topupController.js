@@ -64,7 +64,10 @@ const webhook = catchAsync(async(req,res,next)=>{
     const sig = req.headers['stripe-signature'];
     let event;
     try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        const buf = Buffer.from(req.rawBody,'utf8')
+        //const buf = Buffer.from(req.rawBody, 'utf8');
+        //event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        event = stripe.webhooks.constructEvent(buf, sig, endpointSecret)
     } catch (err) {
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
@@ -120,4 +123,16 @@ const webhook = catchAsync(async(req,res,next)=>{
     res.send();
 })
 
-module.exports = {checkOut, getOrderId,webhook}
+const captureRawBody = (req, res, next) => {
+    let data = '';
+    req.setEncoding('utf8');
+    req.on('data', (chunk) => {
+      data += chunk;
+    });
+    req.on('end', () => {
+      req.rawBody = data;
+      next();
+    });
+  };
+
+module.exports = {checkOut, getOrderId,webhook,captureRawBody}
