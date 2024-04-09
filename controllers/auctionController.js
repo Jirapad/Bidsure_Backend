@@ -102,8 +102,8 @@ const getAllAuction = catchAsync(async(req,res,next)=>{
 
 const deleteAuction = catchAsync(async(req,res,next)=>{
     const auctionId = req.body.auctionId
-    const deleteAuction = await Auction.destroy({where:{id:auctionId}})
-    if(!deleteAuction){
+    const deleteAuction = await Auction.destroy({where:{id:auctionId,mode:"live"}})
+    if(deleteAuction===0){
         return next(new AppError('fail to delete aution',400))
     }
     const paths = path.join(__dirname,'..','uploads')

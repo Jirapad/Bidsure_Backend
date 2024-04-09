@@ -250,4 +250,12 @@ const getFollowing = catchAsync(async(req,res,next)=>{
     })
 })
 
-module.exports = {getUserProfile,updateUserFullname,updateUserImage,changePassword,getAllUsername,updateUserBio,follow,unfollow,getFollowing}
+const getUserForSocket = catchAsync(async(req,res,next)=>{
+    const userInfo = req.user
+    return res.status(200).json({
+        userId : userInfo.id,
+        username : userInfo.username
+    })
+})
+
+module.exports = {getUserProfile,updateUserFullname,updateUserImage,changePassword,getAllUsername,updateUserBio,follow,unfollow,getFollowing,getUserForSocket}

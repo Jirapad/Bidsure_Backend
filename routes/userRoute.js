@@ -1,4 +1,4 @@
-const { getUserProfile, changePassword, updateUserImage, updateUserFullname, getAllUsername, updateUserBio, follow, unfollow, getFollowing } = require('../controllers/userController')
+const { getUserProfile, changePassword, updateUserImage, updateUserFullname, getAllUsername, updateUserBio, follow, unfollow, getFollowing, getUserForSocket } = require('../controllers/userController')
 const { authentication } = require('../middlewares/authentication')
 const { upload } = require('../middlewares/upload')
 
@@ -12,5 +12,6 @@ router.route('/alluseridandusername').get(authentication,getAllUsername)
 router.route('/updatebio').patch(authentication,updateUserBio)
 router.route('/follow').patch(authentication,follow).get(authentication,getFollowing)
 router.route('/unfollow').patch(authentication,unfollow)
+router.route('/getusersocket').get(authentication,getUserForSocket)
 
 module.exports = router
