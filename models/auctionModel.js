@@ -36,6 +36,12 @@ module.exports = (sequelize,DataTypes) => {
                 model:'users',
                 key:'id'
             }
+        },
+        rtmpLink:{
+            type: DataTypes.STRING
+        },
+        watchLink:{
+            type: DataTypes.STRING
         }
     })
 

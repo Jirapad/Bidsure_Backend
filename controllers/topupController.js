@@ -49,7 +49,7 @@ const checkOut = catchAsync(async(req,res,next)=>{
 const getOrderId = catchAsync(async(req,res,next)=>{
     const orderId = req.params.id
     const result = await Topup.findOne({where:{orderId}})
-    const user = User.update({
+    const user = await User.update({
         walletBalance: parseFloat(result.price)
     },{
         where:{

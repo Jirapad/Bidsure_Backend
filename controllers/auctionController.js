@@ -4,6 +4,7 @@ const AppError = require("../utils/appError");
 const Auction = db.auctions
 const fs = require('fs')
 const User = db.users
+const path = require('path')
 
 // const createAuction = catchAsync(async (req,res,next)=> {
 
@@ -54,17 +55,27 @@ const createAuction = catchAsync(async(req,res,next)=>{
         return next(new AppError('can not create auction',400))
     }
     if(auction.mode === 'live'){
+        const rowsUpdated = await Auction.update({
+            rtmpLink:`/live/${auction.id}`, 
+            watchLink:`/live/${auction.id}/index.m3u8`
+        },{
+            where:{
+                id : auction.id
+            }
+        })
+        if(rowsUpdated.length===1){
+            return res.status(201).json({
+                status: `live auction created`,
+                auction
+            })
+        }
+        return next(new AppError('cannot add link in live auction',400))
+    }else{
         return res.status(201).json({
-            status: 'auction created',
-            auction,
-            rtmpLink: `/live/${auction.id}`,
-            watchLink: `/live/${auction.id}/index.m3u8`
+            status: 'online auction created',
+            auction
         })
     }
-    return res.status(201).json({
-        status: 'auction created',
-        auction
-    })
 })
 
 const getAllAuction = catchAsync(async(req,res,next)=>{
@@ -91,13 +102,13 @@ const getAllAuction = catchAsync(async(req,res,next)=>{
 
 const deleteAuction = catchAsync(async(req,res,next)=>{
     const auctionId = req.body.auctionId
-    const deleteAuction = await Auction.FindOneAndDelete({id:auctionId})
+    const deleteAuction = await Auction.destroy({where:{id:auctionId}})
     if(!deleteAuction){
         return next(new AppError('fail to delete aution',400))
     }
-    const path = path.join(__dirname,'..','uploads')
+    const paths = path.join(__dirname,'..','uploads')
     for(i in deleteAuction.images){
-        if(!(await fs.unlink(`${path}${deleteAuction.images[i]}`))){
+        if(!(await fs.unlink(`${paths}${deleteAuction.images[i]}`))){
             return next(new AppError('fail to delete aution image',400))
         }
     }
@@ -160,10 +171,21 @@ const getOneAuction = catchAsync(async(req,res,next)=>{
         info.endTime
     }
     console.log(info.endTime)
-    return res.status(200).json({
-        status:'success',
-        data: info
+        return res.status(200).json({
+            status:'success',
+            data: info
     })
 })
 
-module.exports = {createAuction,getAllAuction,getFollowingAuction,deleteAuction,getOneAuction}
+const getLiveAuctionInfo = catchAsync(async(req,res,next)=>{
+    const userId = req.user.id
+    const liveAuction = await Auction.findOne({where:{host:userId,mode:"live"}})
+    if(!liveAuction){
+        return next(new AppError("cannot get live auction info",400))
+    }
+    return res.status(200).json({
+        info: liveAuction
+    })
+})
+
+module.exports = {createAuction,getAllAuction,getFollowingAuction,deleteAuction,getOneAuction,getLiveAuctionInfo}
