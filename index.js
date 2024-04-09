@@ -17,6 +17,7 @@ app.use((req, res, next) => {
     }
 })
 
+
 const auctionImagesDir = path.join(__dirname, 'uploads', 'auctionImages');
 const userImagesDir = path.join(__dirname, 'uploads', 'userImages');
 
@@ -39,6 +40,7 @@ const biddingRouter = require('./routes/biddingRoute')
 const globalErrorHandler = require('./controllers/errorController')
 const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
+const bodyParser = require('body-parser')
 
 app.use('/auth',authRouter)
 app.use('/auction',auctionRouter)

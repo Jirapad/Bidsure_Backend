@@ -3,6 +3,6 @@ const { createBidding, getHighestBid } = require('../controllers/biddingControll
 const { authentication } = require('../middlewares/authentication')
 
 router.route('/createbidding').post(authentication,createBidding)
-router.route('/').get(getHighestBid)
+router.route('/').post(getHighestBid)
 
 module.exports = router

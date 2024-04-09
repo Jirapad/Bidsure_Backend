@@ -8,7 +8,6 @@ module.exports = (sequelize,DataTypes) => {
         auctionId:{
             allowNull:false,
             type: DataTypes.INTEGER,
-            unique: true,
             references:{
                 model:'auctions',
                 key:'id'

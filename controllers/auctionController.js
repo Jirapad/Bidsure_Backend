@@ -137,10 +137,29 @@ const getFollowingAuction = catchAsync(async(req,res,next)=>{
 
 const getOneAuction = catchAsync(async(req,res,next)=>{
     const auctionId = req.body.auctionId
-    const info = await Auction.findByPk(auctionId)
+    let info = await Auction.findByPk(auctionId)
     if(!info){
         return next(new AppError("fail to get auction",400))
     }
+    if (info.endTime) {
+        // Convert endTime to Thailand time zone
+        const endTimeUTC = new Date(info.endTime);
+        const thailandOffset = 7 * 60 * 60 * 1000; // Thailand is UTC+7
+        const endTimeThailand = new Date(endTimeUTC.getTime() + thailandOffset);
+        
+        // Format the date and time in the desired way
+        const options = { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        };
+        info.endTime = endTimeThailand.toLocaleString('en-US', options)
+        info.endTime
+    }
+    console.log(info.endTime)
     return res.status(200).json({
         status:'success',
         data: info

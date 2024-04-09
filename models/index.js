@@ -55,7 +55,7 @@ db.biddings.belongsTo(db.users,{foreignKey:'userId'})
 db.auctions.hasOne(db.biddings,{foreignKey:'auctionId'})
 db.biddings.belongsTo(db.auctions,{foreignKey:'auctionId'})
 
-//keep all column but constraints is same as first running
+// //keep all column but constraints is same as first running
 db.sequelize.sync({alter:true}).then(()=>{
     console.log('re-sync done!')
 })
