@@ -31,6 +31,7 @@ db.users = require('./userModel')(sequelize,DataTypes)
 db.auctions = require('./auctionModel')(sequelize,DataTypes)
 db.topups = require('./topupModel')(sequelize,DataTypes)
 db.transections = require('./transectionModel')(sequelize,DataTypes)
+db.biddings = require('./biddingModel')(sequelize,DataTypes)
 
 //define association
 db.users.hasMany(db.auctions, { foreignKey: 'host' });
@@ -39,14 +40,20 @@ db.auctions.belongsTo(db.users, { foreignKey: 'host' });
 db.users.hasMany(db.topups, {foreignKey: 'userId'})
 db.topups.belongsTo(db.users,{foreignKey: 'userId'})
 
-//db.users.hasMany(db.transections,{foreignKey:'buyerId'})
-//db.transections.belongsTo(db.users,{foreignKey:'buyerId'})
+db.users.hasMany(db.transections,{foreignKey:'buyerId'})
+db.transections.belongsTo(db.users,{foreignKey:'buyerId'})
 
-//db.users.hasMany(db.transections,{foreignKey:'sellerId'})
-//db.transections.belongsTo(db.users,{foreignKey:'sellerId'})
+db.users.hasMany(db.transections,{foreignKey:'sellerId'})
+db.transections.belongsTo(db.users,{foreignKey:'sellerId'})
 
-//db.auctions.hasOne(db.transections,{foreignKey:'auctionId'})
-//db.transections.belongsTo(db.auctions,{foreignKey:'auctionId'})
+db.auctions.hasOne(db.transections,{foreignKey:'auctionId'})
+db.transections.belongsTo(db.auctions,{foreignKey:'auctionId'})
+
+db.users.hasMany(db.biddings,{foreignKey:'userId'})
+db.biddings.belongsTo(db.users,{foreignKey:'userId'})
+
+db.auctions.hasOne(db.biddings,{foreignKey:'auctionId'})
+db.biddings.belongsTo(db.auctions,{foreignKey:'auctionId'})
 
 //keep all column but constraints is same as first running
 db.sequelize.sync({alter:true}).then(()=>{

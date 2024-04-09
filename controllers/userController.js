@@ -30,6 +30,8 @@ const getAllUsername = catchAsync(async(req,res,next)=>{
         user.username = allUsername[i].dataValues.username
         user.image = allUsername[i].dataValues.image
         user.bio = allUsername[i].dataValues.bio
+        user.following = allUsername[i].dataValues.following
+        user.follower = allUsername[i].dataValues.follower
         if(user.id != userId){
             userIdAndName.push(user)
         }
@@ -49,7 +51,9 @@ const getUserProfile = catchAsync(async(req,res,next) => {
         fullname: userInfo.fullname,
         username: userInfo.username,
         image: userInfo.image,
-        bio: userInfo.bio
+        bio: userInfo.bio,
+        following: userInfo.following,
+        follower: userInfo.follower
     })
 })
 
@@ -144,7 +148,7 @@ const follow = catchAsync(async(req,res,next)=>{
     }else{
         following.push(`${follow}`)
     }
-    console.log(following)
+    // console.log(following)
     const rowsUpdated = await User.update({
         following: following
     },{
@@ -153,11 +157,39 @@ const follow = catchAsync(async(req,res,next)=>{
         }
     })
     if(rowsUpdated.length===1){
+        const check = addFollower(id,follow)
+        if(check === false){
+            return next(new AppError(`fail to add follower`,400))
+        }
         return res.status(200).json({
             status: `following success ${follow}`,
         })
     }
     return next(new AppError(`fail to following`,400))
+})
+
+const addFollower = catchAsync(async(id,follow)=>{
+    //id คนกด follow คนโดนกด
+    let user = await User.findByPk(parseInt(follow))
+    if(!user){
+        return false
+    }
+    if(user.follower === null){
+        user.follower = [`${id}`]
+    }else{
+        (user.follower).push(`${id}`)
+    }
+    const rowsUpdated = await User.update({
+        follower : user.follower
+    },{
+        where:{
+            id: parseInt(follow)
+        }
+    })
+    if(rowsUpdated.length===1){
+        return true
+    }
+    return false
 })
 
 const unfollow = catchAsync(async(req,res,next)=>{
@@ -176,11 +208,39 @@ const unfollow = catchAsync(async(req,res,next)=>{
         }
     })
     if(rowsUpdated.length===1){
+        const check = removeFollower(id,unfollow)
+        if(check === false){
+            return next(new AppError(`fail to remove follower`,400))
+        }
         return res.status(200).json({
             status: `unfollow success`,
         })
     }
     return next(new AppError('fail to unfollow',400))
+})
+
+const removeFollower = catchAsync(async(id,unfollow)=>{
+    //id คนกด follow คนโดนกด
+    let user = await User.findByPk(parseInt(unfollow))
+    if(!user){
+        return false
+    }
+    for(i in user.follower){
+        if(user.follower[i]===`${id}`){
+            (user.follower).splice(i, 1)
+        }
+    }
+    const rowsUpdated = await User.update({
+        follower : user.follower
+    },{
+        where:{
+            id: parseInt(unfollow)
+        }
+    })
+    if(rowsUpdated.length===1){
+        return true
+    }
+    return false
 })
 
 const getFollowing = catchAsync(async(req,res,next)=>{

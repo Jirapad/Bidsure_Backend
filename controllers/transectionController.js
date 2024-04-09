@@ -3,6 +3,7 @@ const db = require('../models');
 const AppError = require("../utils/appError");
 const { Op } = require("sequelize");
 const Transection = db.transections
+
 const createTransection = catchAsync(async(req,res,next)=>{
     const body = req.body
     const userId = req.user.id

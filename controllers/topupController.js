@@ -5,6 +5,7 @@ const {v4: uuidv4} = require('uuid')
 const db = require('../models');
 const AppError = require('../utils/appError');
 const Topup = db.topups
+const User = db.users
 
 const checkOut = catchAsync(async(req,res,next)=>{
     const user = req.user
@@ -48,13 +49,36 @@ const checkOut = catchAsync(async(req,res,next)=>{
 const getOrderId = catchAsync(async(req,res,next)=>{
     const orderId = req.params.id
     const result = await Topup.findOne({where:{orderId}})
+    const user = User.update({
+        walletBalance: parseFloat(result.price)
+    },{
+        where:{
+            id: result.userId
+        }
+    })
+    if(!user){
+        return next(new AppError("can not update wallet balance",400))
+    }
     if(!result){
         return next(new AppError("can not find orderId",400))
     }
     return res.status(200).json({
-        status: `Top-up amount ${result.price} Success!!, you can close this tap`
+        status: `Top-up amount ${result.price} Baht, Success!!, you can close this tap`
     })
 
+})
+
+const getWalletBalance = catchAsync(async(req,res,next)=>{
+    const walletBalance = req.user.walletBalance
+    if(walletBalance===null||walletBalance===0){
+        return res.status(200).json({
+            walletBalance: 0
+        })
+    }else{
+        return res.status(200).json({
+            walletBalance: walletBalance
+        })
+    }
 })
 
 const webhook = catchAsync(async(req,res,next)=>{
@@ -121,4 +145,4 @@ const webhook = catchAsync(async(req,res,next)=>{
     res.send();
 })
 
-module.exports = {checkOut, getOrderId,webhook}
+module.exports = {checkOut, getOrderId,webhook,getWalletBalance}

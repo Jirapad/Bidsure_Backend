@@ -57,6 +57,15 @@ module.exports = (sequelize,DataTypes) => {
         },
         following:{
             type: DataTypes.ARRAY(DataTypes.STRING)
+        },
+        follower:{
+            type: DataTypes.ARRAY(DataTypes.STRING)
+        },
+        walletBalance:{
+            type: DataTypes.DECIMAL
+        },
+        lockBalance:{
+            type: DataTypes.DECIMAL
         }
     })
 
