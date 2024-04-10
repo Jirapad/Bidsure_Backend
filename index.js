@@ -36,6 +36,7 @@ const auctionRouter = require('./routes/auctionRoute')
 const userRouter = require('./routes/userRoute')
 const topupRouter = require('./routes/topupRoute')
 const biddingRouter = require('./routes/biddingRoute')
+const transectionRouter = require('./routes/transectionRoute')
 
 const globalErrorHandler = require('./controllers/errorController')
 const catchAsync = require('./utils/catchAsync')
@@ -47,6 +48,7 @@ app.use('/auction',auctionRouter)
 app.use('/user',userRouter)
 app.use('/topup',topupRouter)
 app.use('/bidding',biddingRouter)
+app.use('/transection',transectionRouter)
 
 app.use(
     '*',

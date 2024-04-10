@@ -43,7 +43,7 @@ module.exports = (sequelize,DataTypes) => {
         watchLink:{
             type: DataTypes.STRING
         }
-    })
+    },{paranoid: true})
 
     // Auction.associate = (models) => {
     //     Auction.belongsTo(models.User, { foreignKey: 'host' });

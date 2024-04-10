@@ -102,7 +102,7 @@ const getAllAuction = catchAsync(async(req,res,next)=>{
 
 const deleteAuction = catchAsync(async(req,res,next)=>{
     const auctionId = req.body.auctionId
-    const deleteAuction = await Auction.destroy({where:{id:auctionId,mode:"live"}})
+    const deleteAuction = await Auction.destroy({where:{id:auctionId}})
     if(deleteAuction===0){
         return next(new AppError('fail to delete aution',400))
     }

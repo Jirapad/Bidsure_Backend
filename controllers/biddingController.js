@@ -33,7 +33,7 @@ const getHighestBid = catchAsync(async(req,res,next)=>{
     //let bidId
     //let time
     let result = { 
-        bidId : null,
+        id : null,
         price : `${highest}`,
         time : null,
     }
