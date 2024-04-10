@@ -49,8 +49,15 @@ const checkOut = catchAsync(async(req,res,next)=>{
 const getOrderId = catchAsync(async(req,res,next)=>{
     const orderId = req.params.id
     const result = await Topup.findOne({where:{orderId}})
+    const userwallet = await User.findOne({where:{id:result.userId}})
+    let addwallet
+    if(userwallet.walletBalance===null){
+        addwallet = parseFloat(result.price)
+    }else{
+        addwallet = parseFloat(userwallet.walletBalance)+parseFloat(result.price)
+    }
     const user = await User.update({
-        walletBalance: parseFloat(result.price)
+        walletBalance: parseFloat(addwallet)
     },{
         where:{
             id: result.userId
